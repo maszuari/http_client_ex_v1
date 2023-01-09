@@ -25,6 +25,7 @@ if __name__ == "__main__":
   print(r1.status, r1.reason)
   #response = conn.getresponse()
   #print(response.read().decode())
+  
   try:
      js = json.loads(r1.read().decode())
      sorted_results(js)
