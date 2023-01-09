@@ -3,6 +3,10 @@ import json
 import datetime
 
 def sorted_results(out):
+'''
+This function will sort the data.
+param out: Python object.
+'''
     list = []
     for obj in out:
         list.append(obj['title'])
