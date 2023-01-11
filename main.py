@@ -3,6 +3,10 @@ import json
 import datetime
 
 def sorted_results(out):
+'''
+This function will sort the data.
+param out: Python object.
+'''
     list = []
     for obj in out:
         list.append(obj['title'])
@@ -10,6 +14,7 @@ def sorted_results(out):
     sorted_list = sorted(list, key=str.lower)
     for obj in sorted_list:
         print(obj)
+
 
 if __name__ == "__main__":
   print('Start')
@@ -35,3 +40,17 @@ if __name__ == "__main__":
   except ValueError:  # includes simplejson.decoder.JSONDecodeError
         print('Decoding JSON has failed')
     
+
+#comment out original code:
+'''print('Start')
+start = datetime.datetime.now()
+conn = http.client.HTTPSConnection('test.spaceflightnewsapi.net')
+headers = {'Content-type': 'application/json'}
+conn.request("GET", "/api/v2/articles?_limit=30", headers=headers)
+response = conn.getresponse()
+js = json.loads(response.read().decode())
+sorted_results(js)
+conn.close()
+diff = datetime.datetime.now() - start
+print('End {} seconds '.format(diff.total_seconds()))'''
+
