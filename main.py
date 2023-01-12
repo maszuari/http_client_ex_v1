@@ -1,29 +1,19 @@
 import http.client
 import json
 import datetime
-
-def sorted_results(out):
-'''
-This function will sort the data.
-param out: Python object.
-'''
-    list = []
-    for obj in out:
-        list.append(obj['title'])
-    
-    sorted_list = sorted(list, key=str.lower)
-    for obj in sorted_list:
-        print(obj)
-
+from util import SortUtil
 
 print('Start')
 start = datetime.datetime.now()
-conn = http.client.HTTPSConnection('test.spaceflightnewsapi.net')
+conn = http.client.HTTPSConnection('api.spaceflightnewsapi.net')
 headers = {'Content-type': 'application/json'}
-conn.request("GET", "/api/v2/articles?_limit=30", headers=headers)
+conn.request("GET", "/v3/articles?_limit=30", headers=headers)
 response = conn.getresponse()
 js = json.loads(response.read().decode())
-sorted_results(js)
+sort_util = SortUtil()
+sorted_list = sort_util.sorted_results(js)
+for item in sorted_list:
+    print(item)
 conn.close()
 diff = datetime.datetime.now() - start
 print('End {} seconds '.format(diff.total_seconds()))
