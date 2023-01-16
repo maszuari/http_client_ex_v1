@@ -6,19 +6,19 @@ from util import SortUtil
 start = datetime.datetime.now()
 
 #create instance of a class
-getData = HttpRequestResponse('api.spaceflightnewsapi.net', '/v3/articles?_limit=30')  
+request_response = HttpRequestResponse('api.spaceflightnewsapi.net', '/v3/articles?_limit=30')  
 
 #retrieve data      
-dataList = getData.establish_connection('api.spaceflightnewsapi.net', '/v3/articles?_limit=30', start)
+data_list = request_response.establish_connection('api.spaceflightnewsapi.net', '/v3/articles?_limit=30', start)
 
 #create instance of a class
 sort_util = SortUtil()
 
 #print sorted data
-sort_util.print_sorted_data(dataList)
+sort_util.print_sorted_data(data_list)
 
 #calculate time taken to retrieve data
 diff = datetime.datetime.now() - start
 
 #print time taken to retrieve data
-getData.print_time_taken(diff)
+request_response.print_time_taken(diff)
