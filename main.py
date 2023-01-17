@@ -1,19 +1,27 @@
-import http.client
-import json
+from reader import HttpRequestResponse
 import datetime
 from util import SortUtil
 
-print('Start')
+#get current time
 start = datetime.datetime.now()
-conn = http.client.HTTPSConnection('api.spaceflightnewsapi.net')
-headers = {'Content-type': 'application/json'}
-conn.request("GET", "/v3/articles?_limit=30", headers=headers)
-response = conn.getresponse()
-js = json.loads(response.read().decode())
+
+#create instance of a class
+request_response = HttpRequestResponse('api.spaceflightnewsapi.net', '/v3/articles?_limit=30')  
+
+#retrieve data      
+data_list = request_response.establish_connection(start) 
+
+#create instance of a class
 sort_util = SortUtil()
-sorted_list = sort_util.sorted_results(js, True)
-for item in sorted_list:
-    print(item)
-conn.close()
+
+if data_list != None:
+  #sort data
+  sorted_list = sort_util.sorted_results(data_list, True)
+  #print sorted data
+  sort_util.print_sorted_data(sorted_list)
+
+#calculate time taken to retrieve data
 diff = datetime.datetime.now() - start
-print('End {} seconds '.format(diff.total_seconds()))
+
+#print time taken to retrieve data
+request_response.print_time_taken(diff)
