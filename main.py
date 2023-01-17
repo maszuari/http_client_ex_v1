@@ -11,7 +11,7 @@ conn.request("GET", "/v3/articles?_limit=30", headers=headers)
 response = conn.getresponse()
 js = json.loads(response.read().decode())
 sort_util = SortUtil()
-sorted_list = sort_util.sorted_results(js)
+sorted_list = sort_util.sorted_results(js, True)
 for item in sorted_list:
     print(item)
 conn.close()
