@@ -9,13 +9,14 @@ start = datetime.datetime.now()
 request_response = HttpRequestResponse('api.spaceflightnewsapi.net', '/v3/articles?_limit=30')  
 
 #retrieve data      
-data_list = request_response.establish_connection('api.spaceflightnewsapi.net', '/v3/articles?_limit=30', start)
+data_list = request_response.establish_connection(start) 
 
 #create instance of a class
 sort_util = SortUtil()
 
 #print sorted data
-sort_util.print_sorted_data(data_list)
+if data_list != None:
+  sort_util.print_sorted_data(data_list)
 
 #calculate time taken to retrieve data
 diff = datetime.datetime.now() - start
