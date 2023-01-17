@@ -14,9 +14,11 @@ data_list = request_response.establish_connection(start)
 #create instance of a class
 sort_util = SortUtil()
 
-#print sorted data
 if data_list != None:
-  sort_util.print_sorted_data(data_list)
+  #sort data
+  sorted_list = sort_util.sorted_results(data_list, True)
+  #print sorted data
+  sort_util.print_sorted_data(sorted_list)
 
 #calculate time taken to retrieve data
 diff = datetime.datetime.now() - start

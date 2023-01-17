@@ -35,7 +35,9 @@ class HttpRequestResponse:
                print('Decoding JSON has failed') 
         if data_available:  
          return js
-
+        else:
+          print("Unable to retrieve data")
+          return None #print message
     #print time taken
     def print_time_taken(self, diff):
         print('End {} seconds '.format(diff.total_seconds()))
