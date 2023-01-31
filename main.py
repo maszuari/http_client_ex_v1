@@ -1,6 +1,6 @@
-from reader import HttpRequestResponse
+from sort.index.reader import HttpRequestResponse
 import datetime
-from util import SortUtil
+from sort.index.util import SortUtil
 
 #get current time
 start = datetime.datetime.now()
