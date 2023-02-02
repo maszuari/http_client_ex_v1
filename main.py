@@ -1,6 +1,6 @@
-from reader import HttpRequestResponse
+from sort.index.reader import HttpRequestResponse
 import datetime
-from util import SortUtil
+from sort.index.util import SortUtil
 
 #get current time
 start = datetime.datetime.now()
@@ -19,6 +19,9 @@ if data_list != None:
   sorted_list = sort_util.sorted_results(data_list, True)
   #print sorted data
   sort_util.print_sorted_data(sorted_list)
+
+  #print filtered data by specific letter
+  sort_util.filter_title_by_character(sorted_list, "c")
 
 #calculate time taken to retrieve data
 diff = datetime.datetime.now() - start
