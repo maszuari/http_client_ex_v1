@@ -19,4 +19,12 @@ class SortUtil:
         for item in data:
             print(item)			
 
-  
+  #Filter list by specific character
+  def filter_title_by_character(self, data_list, letter):
+      # using list comprehension + lower()
+      # Words starting with specific letter
+      res = [idx for idx in data_list if idx[0].lower() == letter.lower()]
+      # print result
+      print('\n*******************************************************************')
+      print("The list of matching first letter : " + str(res))
+      return res

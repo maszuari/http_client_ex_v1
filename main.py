@@ -20,6 +20,9 @@ if data_list != None:
   #print sorted data
   sort_util.print_sorted_data(sorted_list)
 
+  #print filtered data by specific letter
+  sort_util.filter_title_by_character(sorted_list, "c")
+
 #calculate time taken to retrieve data
 diff = datetime.datetime.now() - start
 

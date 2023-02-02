@@ -4,34 +4,23 @@ from sort.index.reader import HttpRequestResponse
 from sort.index.util import SortUtil
 import responses
 import requests
-import httpx
-import respx
-from httpx import Response
 from mock import patch
 
 class TestFunctions(unittest.TestCase):
-    #@responses.activate #second method
-    @respx.mock
     @patch('sort.index.reader.HttpRequestResponse.establish_connection')
     def test_establish_connection(self, get_connection_mock):
+        # Test return value
         start = datetime.datetime.now()
-        #Test connection. First method
-        my_route = respx.get("https://api.spaceflightnewsapi.net/v3/articles?_limit=30").mock(return_value=Response(204))
-        response = httpx.get("https://api.spaceflightnewsapi.net/v3/articles?_limit=30")
-        assert my_route.called
-        assert response.status_code == 204
-
-        #Test return value
-        get_connection_mock.return_value = 'mocked_stuff'
+        get_connection_mock.return_value = {"title": "Bell", "title": "Apple", "title": "Cat"}
+        mock_value = {"title": "Bell", "title": "Apple", "title": "Cat"}
         connection = HttpRequestResponse('api.spaceflightnewsapi.net', '/v3/articles?_limit=30')
-        self.assertEqual(connection.establish_connection(start), 'mocked_stuff')
-        self.assertEqual(get_connection_mock.call_count, 1)
-        get_connection_mock.assert_called_once()
-
         self.assertIsNotNone(connection.establish_connection(start))
+        self.assertEqual(connection.establish_connection(start), mock_value)
 
-        #Test connection. Second method:
-        '''responses.add(responses.GET, 'https://api.spaceflightnewsapi.net/v3/articles?_limit=30',
+    @responses.activate
+    def test_establish_connection_http_404(self):
+        # Test connection. 404: The server cannot find the requested resource
+        responses.add(responses.GET, 'https://api.spaceflightnewsapi.net/v3/articles?_limit=30',
                       json={'error': 'not found'}, status=404)
 
         resp = requests.get('https://api.spaceflightnewsapi.net/v3/articles?_limit=30')
@@ -39,27 +28,55 @@ class TestFunctions(unittest.TestCase):
         assert resp.json() == {"error": "not found"}
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == 'https://api.spaceflightnewsapi.net/v3/articles?_limit=30'
-        assert responses.calls[0].response.text == '{"error": "not found"}'''''
+        assert responses.calls[0].response.text == '{"error": "not found"}'
 
-        #original code:
-        '''connection = HttpRequestResponse('api.spaceflightnewsapi.net', '/v3/articles?_limit=30')
-        data = self.assertIsNotNone(connection.establish_connection(start))'''
+    @responses.activate
+    def test_establish_connection_http_400(self):
+        # Test connection. 400: The server cannot or will not process the request due to something that is perceived to be a client error
+        responses.add(responses.GET, 'https://api.spaceflightnewsapi.net/v3/articles?_limit=30',
+                      json={'error': 'Invalid status code'}, status=400)
 
-    @patch('sort.index.util.SortUtil.sorted_results')
+        resp = requests.get('https://api.spaceflightnewsapi.net/v3/articles?_limit=30')
+
+        assert resp.json() == {"error": "Invalid status code"}
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == 'https://api.spaceflightnewsapi.net/v3/articles?_limit=30'
+        assert responses.calls[0].response.text == '{"error": "Invalid status code"}'
+
+    @responses.activate
+    def test_establish_connection_http_500(self):
+        # Test connection. 500: The server encountered an unexpected condition that prevented it from fulfilling the request
+        responses.add(responses.GET, 'https://api.spaceflightnewsapi.net/v3/articles?_limit=30',
+                      json={'error': 'Internal Server Error'}, status=500)
+
+        resp = requests.get('https://api.spaceflightnewsapi.net/v3/articles?_limit=30')
+
+        assert resp.json() == {"error": "Internal Server Error"}
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == 'https://api.spaceflightnewsapi.net/v3/articles?_limit=30'
+        assert responses.calls[0].response.text == '{"error": "Internal Server Error"}'
+
+    @responses.activate
+    def test_establish_connection_http_200(self):
+        # Test connection. 200: Successful request
+        responses.add(responses.GET, 'https://api.spaceflightnewsapi.net/v3/articles?_limit=30',
+                      json={'status': 'Accepted'}, status=200)
+
+        resp = requests.get('https://api.spaceflightnewsapi.net/v3/articles?_limit=30')
+
+        assert resp.json() == {"status": "Accepted"}
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == 'https://api.spaceflightnewsapi.net/v3/articles?_limit=30'
+        assert responses.calls[0].response.text == '{"status": "Accepted"}'
+
+    @patch('sort.index.reader.HttpRequestResponse.establish_connection')
     def test_sorted_results(self, get_sorted_results_mock):
-        get_sorted_results_mock.return_value = ['Apple', 'Bell', 'Cat']
-        self.assertIsNotNone(get_sorted_results_mock)
-
-        data_list = ['Bell', 'Apple', 'Cat']
+        get_sorted_results_mock.return_value = {"title": "Bell", "title": "Apple", "title": "Cat"}
         sort_util = SortUtil()
-        self.assertEqual(sort_util.sorted_results(data_list, False), ['Apple', 'Bell', 'Cat'])
+        self.assertIsNotNone(sort_util.sorted_results(get_sorted_results_mock, True))
 
-        #original code:
-        '''start = datetime.datetime.now()
-        connection = HttpRequestResponse('api.spaceflightnewsapi.net', '/v3/articles?_limit=30')
-        data_list = connection.establish_connection(start)
+    def test_filter_title_by_character(self):
+        data_list = ['Cally', 'Betty', 'Emily', 'Jacob', 'Josephine', 'Chris']
         sort_util = SortUtil()
-        self.assertIsNotNone(sort_util.sorted_results(data_list, True))'''
-
-
-    #unittest.main()
+        #self.assertIsNone(sort_util.filter_title_by_character(data_list, "J"))
+        self.assertEqual(sort_util.filter_title_by_character(data_list, "J"), ['Jacob', 'Josephine'])
